@@ -1,18 +1,16 @@
 import jwt from "jsonwebtoken";
+import User from "../models/User.mjs";
 
-export const verifyToken = (req, res) => {
-  const header = req.headers.authorization;
-  if (!header)
-    return res.status(401).json({ msg: "Token no proporcionado" });
+export const auth = async (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
 
-  const token = header.split(" ")[1];
-  if (!token)
-    return res.status(401).json({ msg: "Token no válido" });
+  if (!token) return res.status(401).json("Token requerido");
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return decoded; // devuelve { id, email, isAdmin }
-  } catch (err) {
-    return res.status(401).json({ msg: "Token inválido" });
+    req.user = await User.findByPk(decoded.id);
+    next();
+  } catch {
+    res.status(401).json("Token inválido");
   }
 };

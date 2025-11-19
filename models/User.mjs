@@ -1,50 +1,21 @@
-import { DataTypes, Model } from "sequelize";
-import { sequelize } from "./config/db.mjs";
+import { DataTypes } from "sequelize";
+import sequelize from "../config/database.mjs";
 
-
-export class User extends Model {}
-
-
-User.init(
-{
-fullName: {
-type: DataTypes.STRING,
-allowNull: false,
-unique: true,
-validate: {
-notEmpty: {
-msg: "El nombre no puede estar vacío",
-},
-},
-},
-email: {
-type: DataTypes.STRING,
-allowNull: false,
-unique: true,
-validate: {
-isEmail: {
-msg: "Coloque un email válido",
-},
-},
-},
-hash: {
-type: DataTypes.STRING(60),
-allowNull: false,
-},
-isActivate: {
-type: DataTypes.BOOLEAN,
-defaultValue: false,
-},
-activateToken: {
-type: DataTypes.STRING,
-},
-role: {
-type: DataTypes.STRING,
-defaultValue: "user",
-},
-},
-{
-tableName: "users",
-sequelize,
+const User = sequelize.define("User", {
+id: { type: DataTypes.INTEGER,
+     primaryKey: true, 
+     autoIncrement: true },
+nombre: { type: DataTypes.STRING, 
+    allowNull: false },
+email: { type: DataTypes.STRING, 
+    allowNull: false, 
+    unique: true },
+password: { type: DataTypes.STRING,
+    allowNull: false },
+rol: {
+    type: DataTypes.ENUM("admin", "empleado", "usuario"),
+    defaultValue: "usuario"
 }
-);
+});
+
+export default User;
